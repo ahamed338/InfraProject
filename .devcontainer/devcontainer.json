@@ -1,0 +1,16 @@
+{
+  "name": "Infra Dev Environment",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "forwardPorts": [4566, 8080, 8000],
+  "workspaceFolder": "/workspace",
+  "extensions": [
+    "hashicorp.terraform",
+    "ms-azuretools.vscode-docker",
+    "ms-kubernetes-tools.vscode-kubernetes-tools"
+  ],
+  "settings": {},
+  "postCreateCommand": "bash /workspace/.devcontainer/setup.sh"
+}
