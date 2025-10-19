@@ -20,3 +20,4 @@ awscliv2.zip
 
 # The directory containing the installer scripts
 aws/
+*.deb
