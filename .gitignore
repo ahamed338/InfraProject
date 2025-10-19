@@ -1,0 +1,15 @@
+
+# Terraform & local environment ignores
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+*.log
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
