@@ -6,7 +6,7 @@
 crash.log
 override.tf
 *.log
-
+devops-demo/environments/dev/.terraform/
 # Editor and OS files
 .vscode/
 .idea/
