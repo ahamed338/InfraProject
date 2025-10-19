@@ -12,4 +12,4 @@ devops-demo/environments/dev/.terraform/
 .idea/
 .DS_Store
 *.swp
-
+*.zip
