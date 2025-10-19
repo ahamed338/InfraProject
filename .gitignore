@@ -13,3 +13,4 @@ devops-demo/environments/dev/.terraform/
 .DS_Store
 *.swp
 *.zip
+*.lock.hcl

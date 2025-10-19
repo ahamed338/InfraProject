@@ -9,7 +9,7 @@ terraform {
 
 provider "kubernetes" {
   config_path    = "~/.kube/config"
-  config_context = "minikube" # Works with local minikube/kind
+  config_context = "kind-kind" # Works with local minikube/kind
 }
 
 resource "kubernetes_namespace" "devops_demo" {

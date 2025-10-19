@@ -14,7 +14,6 @@ provider "aws" {
 
 resource "aws_s3_bucket" "demo_bucket" {
   bucket = "terraform-demo-bucket"
-  acl    = "public-read"
 }
 
 output "bucket_name" {
