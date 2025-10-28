@@ -35,7 +35,7 @@ ENV PATH=/root/.local/bin:$PATH
 # Switch to non-root user
 USER appuser
 
-# Health check (we'll add this endpoint to app.py)
+# Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:5000/health', timeout=10)" || exit 1
 
