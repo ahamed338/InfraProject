@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DevOps Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to DevOps Demo</h1>
+        <p>Container ID: {{ container_id }}</p>
+        <p>This is running in a multi-stage Docker container!</p>
+        <p>Status: <span style="color: green;">Healthy</span></p>
+    </div>
+</body>
+</html>
