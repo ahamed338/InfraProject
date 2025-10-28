@@ -3,11 +3,12 @@ FROM python:3.9-slim as builder
 
 WORKDIR /app
 
-# Install build dependencies
+# Install build dependencies (minimal for Codespaces)
 RUN apt-get update && apt-get install -y \
     gcc \
     python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # Copy requirements and install dependencies
 COPY requirements.txt .
@@ -35,9 +36,9 @@ ENV PATH=/root/.local/bin:$PATH
 # Switch to non-root user
 USER appuser
 
-# Health check
+# Health check (using curl instead of requests for reliability)
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000/health', timeout=10)" || exit 1
+    CMD curl -f http://localhost:5000/health || exit 1
 
 EXPOSE 5000
 
