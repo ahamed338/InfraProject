@@ -1,0 +1,10 @@
+export AWS_ACCESS_KEY_ID=test
+export AWS_SECRET_ACCESS_KEY=test
+export AWS_DEFAULT_REGION=us-east-1
+
+docker ps | grep localstack
+if nothing running run below
+docker run --rm -it -p 4566:4566 -p 4571:4571 localstack/localstack
+run below to verify if the above completes successfully
+curl http://localhost:4566/health
+

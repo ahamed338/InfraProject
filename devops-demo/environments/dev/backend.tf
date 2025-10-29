@@ -4,7 +4,7 @@ terraform {
     key    = "terraform.tfstate"
     region = "us-east-1"
 
-    endpoints {
+    endpoints = {
       s3 = "http://localhost:4566"
     }
 

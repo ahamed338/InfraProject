@@ -1,30 +1,38 @@
-# DevOps Makefile: Terraform workflows, linting, and security checks
+# DevOps Makefile: Terraform workflows, linting, and security checks with LocalStack setup for Codespaces
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-# Usage:
-#   make help
-#   make init ENV=dev
-#   make plan ENV=staging
-#   make apply ENV=prod
-#   make tfsec ENV=dev
+# ----------------------------
+# Local environment variables
+# ----------------------------
+export AWS_ACCESS_KEY_ID = test
+export AWS_SECRET_ACCESS_KEY = test
+export AWS_DEFAULT_REGION = us-east-1
+export LOCALSTACK_HOSTNAME = localhost
+export EDGE_PORT = 4566
+export SERVICES = s3,lambda,cloudformation,iam
 
-# Default environment can be overridden: ENV=dev|staging|prod
+# ----------------------------
+# Default environment
+# ----------------------------
 ENV ?= dev
 STACK := devops-demo/environments/$(ENV)
-
 TF := terraform
 TF_CMD := $(TF) -chdir=$(STACK)
-
 PLAN_FILE := plan.out
 
-.PHONY: help init validate plan plan-destroy show apply destroy output fmt fmt-check tflint tfsec checkov cost precommit-install clean bootstrap env-list print-stack
+.PHONY: help setup check-localstack start-localstack all init validate plan plan-destroy show apply destroy output fmt fmt-check tflint tfsec checkov cost precommit-install clean bootstrap env-list print-stack
+
+# ----------------------------
+# Helper targets
+# ----------------------------
 
 help:
 	@echo "DevOps Makefile"
 	@echo "Targets:"
-	@echo "  help                Show this help"
+	@echo "  setup               Setup environment and start LocalStack (for Codespaces)"
+	@echo "  all                 Run fmt, init, validate, plan, and apply"
 	@echo "  init                Terraform init for ENV=$(ENV)"
 	@echo "  validate            Terraform validate"
 	@echo "  plan                Terraform plan (writes $(PLAN_FILE))"
@@ -35,18 +43,49 @@ help:
 	@echo "  output              Show Terraform outputs (JSON)"
 	@echo "  fmt                 terraform fmt -recursive"
 	@echo "  fmt-check           terraform fmt -recursive -check"
-	@echo "  tflint              Run tflint against current ENV stack"
-	@echo "  tfsec               Run tfsec security scan on current ENV stack"
-	@echo "  checkov             Run Checkov security scan on current ENV stack"
-	@echo "  cost                Infracost breakdown for current ENV stack"
-	@echo "  precommit-install   Install pre-commit hooks (if pre-commit is installed)"
+	@echo "  tflint              Run tflint"
+	@echo "  tfsec               Run tfsec security scan"
+	@echo "  checkov             Run Checkov security scan"
+	@echo "  cost                Infracost breakdown"
+	@echo "  precommit-install   Install pre-commit hooks"
 	@echo "  clean               Remove generated plan file"
 	@echo "  bootstrap           Run fmt, init, validate, tflint, tfsec, checkov"
 	@echo "  env-list            List available environments"
 	@echo "  print-stack         Print the resolved stack directory"
-	@echo "\nVariables: ENV={dev|staging|prod} (default: dev)"
+	@echo ""
+	@echo "Variables: ENV={dev|staging|prod} (default: dev)"
 
-init:
+# ----------------------------
+# LocalStack management
+# ----------------------------
+
+check-localstack:
+	@if docker ps --format '{{.Names}}' | grep -q '^localstack_main$$'; then \
+		echo "✅ LocalStack is already running."; \
+	else \
+		echo "⚙️  LocalStack not running. Starting it now..."; \
+		$(MAKE) start-localstack; \
+	fi
+
+start-localstack:
+	@echo "🚀 Starting LocalStack using Docker Compose..."
+	@docker-compose up -d localstack
+	@echo "⏳ Waiting for LocalStack to initialize..."
+	@sleep 10
+	@curl -s http://localhost:4566/health | jq '.services.s3' || echo "⚠️ Could not verify LocalStack health (check docker logs)."
+
+setup: check-localstack
+	@echo "🔧 Environment setup complete for Codespaces."
+
+# ----------------------------
+# Terraform workflow
+# ----------------------------
+
+all: fmt setup init validate plan apply
+	@echo "✅ All Terraform steps completed successfully for ENV=$(ENV)"
+
+init: setup
+	@echo "🔄 Initializing Terraform..."
 	$(TF_CMD) init -upgrade
 
 validate:
@@ -106,12 +145,10 @@ precommit-install:
 clean:
 	rm -f $(STACK)/$(PLAN_FILE)
 
-bootstrap: fmt init validate tflint tfsec checkov
+bootstrap: fmt setup init validate tflint tfsec checkov
 
 env-list:
 	@ls -1 devops-demo/environments | sed 's/^/- /'
 
 print-stack:
 	@echo $(STACK)
-
-
