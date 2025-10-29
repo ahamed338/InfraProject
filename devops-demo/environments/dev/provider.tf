@@ -11,3 +11,7 @@ provider "aws" {
     dynamodb = "http://localhost:4566"
   }
 }
+
+provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
