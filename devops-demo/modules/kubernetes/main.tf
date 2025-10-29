@@ -1,20 +1,12 @@
-terraform {
-  required_providers {
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.32.0"
-    }
-  }
+variable "namespace" {
+  type    = string
+  default = "devops-demo"
 }
 
-provider "kubernetes" {
-  config_path    = "~/.kube/config"
-  config_context = "kind-kind" # Works with local minikube/kind
-}
-
+# These resources will fail until we have a running Kubernetes cluster
 resource "kubernetes_namespace" "devops_demo" {
   metadata {
-    name = "devops-demo"
+    name = var.namespace
   }
 }
 
@@ -26,21 +18,25 @@ resource "kubernetes_deployment" "nginx" {
 
   spec {
     replicas = 1
+
     selector {
       match_labels = {
         app = "nginx"
       }
     }
+
     template {
       metadata {
         labels = {
           app = "nginx"
         }
       }
+
       spec {
         container {
           image = "nginx:latest"
           name  = "nginx"
+
           port {
             container_port = 80
           }

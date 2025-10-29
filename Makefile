@@ -65,7 +65,12 @@ check-localstack:
 	else \
 		echo "⚙️  LocalStack not running. Starting it now..."; \
 		$(MAKE) start-localstack; \
-	fi
+	fi; \
+	echo "⏳ Waiting for LocalStack services to be ready..."; \
+	sleep 10; \
+	curl -s http://localhost:4566/health | grep '"init_scripts": "initialized"' >/dev/null && \
+	echo "✅ LocalStack is healthy." || echo "⚠️  LocalStack might still be starting."
+
 
 start-localstack:
 	@echo "🚀 Starting LocalStack using Docker Compose..."
