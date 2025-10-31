@@ -5,15 +5,19 @@ variable "namespace" {
 
 # These resources will fail until we have a running Kubernetes cluster
 resource "kubernetes_namespace" "devops_demo" {
+  count = var.enable_k8s ? 1 : 0
+
   metadata {
     name = var.namespace
   }
 }
 
 resource "kubernetes_deployment" "nginx" {
+  count = var.enable_k8s ? 1 : 0
+
   metadata {
     name      = "nginx-demo"
-    namespace = kubernetes_namespace.devops_demo.metadata[0].name
+    namespace = var.namespace
   }
 
   spec {
@@ -47,5 +51,5 @@ resource "kubernetes_deployment" "nginx" {
 }
 
 output "namespace" {
-  value = kubernetes_namespace.devops_demo.metadata[0].name
+  value = var.namespace
 }

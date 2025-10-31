@@ -1,15 +1,14 @@
-version: "3.8"
-
+version: '3.8'
 services:
   localstack:
-    image: localstack/localstack
+    image: localstack/localstack:2.3
     container_name: localstack_main
     ports:
       - "4566:4566"
+      - "4510-4559:4510-4559"
     environment:
-      - SERVICES=s3,lambda,cloudformation,iam
-      - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
+      - SERVICES=s3,dynamodb,iam,cloudformation
+      - DEBUG=0
+      - AWS_DEFAULT_REGION=us-east-1
     volumes:
-      - "./.localstack:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"

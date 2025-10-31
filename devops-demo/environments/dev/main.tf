@@ -5,7 +5,6 @@ terraform {
 module "kubernetes" {
   source    = "../../modules/kubernetes"
   namespace = "devops-demo"
-  k8s_host  = ""
 }
 
 output "local_resources" {

@@ -22,7 +22,7 @@ TF := terraform
 TF_CMD := $(TF) -chdir=$(STACK)
 PLAN_FILE := plan.out
 
-.PHONY: help setup check-localstack start-localstack all init validate plan plan-destroy show apply destroy output fmt fmt-check tflint tfsec checkov cost precommit-install clean bootstrap env-list print-stack
+.PHONY: help setup check-localstack start-localstack all init validate plan plan-destroy show apply destroy output fmt fmt-check tflint tfsec checkov cost precommit-install clean bootstrap env-list print-stack helm-lint helm-template
 
 # ----------------------------
 # Helper targets
@@ -52,6 +52,8 @@ help:
 	@echo "  bootstrap           Run fmt, init, validate, tflint, tfsec, checkov"
 	@echo "  env-list            List available environments"
 	@echo "  print-stack         Print the resolved stack directory"
+	@echo "  helm-lint           Helm lint for app chart"
+	@echo "  helm-template       Helm template (no cluster needed)"
 	@echo ""
 	@echo "Variables: ENV={dev|staging|prod} (default: dev)"
 
@@ -157,3 +159,14 @@ env-list:
 
 print-stack:
 	@echo $(STACK)
+
+# ----------------------------
+# Helm
+# ----------------------------
+HELM_CHART ?= devops-demo/modules/app/helm
+
+helm-lint:
+	helm lint $(HELM_CHART)
+
+helm-template:
+	helm template demo $(HELM_CHART) --namespace default

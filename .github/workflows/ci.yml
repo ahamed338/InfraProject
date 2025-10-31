@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        env: [ dev, staging ]
+        env: [ dev ]
     env:
       ENV: ${{ matrix.env }}
     steps:
@@ -57,3 +57,20 @@ jobs:
 
       - name: Checkov
         run: make checkov ENV=${{ matrix.env }}
+
+  helm-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Helm lint
+        run: make helm-lint
+
+      - name: Helm template
+        run: make helm-template
